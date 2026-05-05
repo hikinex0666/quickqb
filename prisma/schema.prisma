@@ -1,0 +1,114 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Customer {
+  id               String    @id @default(cuid())
+  name             String
+  qbCustomerId     String?   @unique
+  cycleDayOfMonth  Int?
+  requiresApproval Boolean   @default(false)
+  hasSalesProgram  Boolean   @default(false)
+  opsManager       String?
+  invoices         Invoice[]
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+}
+
+model Invoice {
+  id               String        @id @default(cuid())
+  customer         Customer      @relation(fields: [customerId], references: [id])
+  customerId       String
+  invoiceNumber    String        @unique
+  invoiceDate      DateTime
+  serviceDateStart DateTime
+  serviceDateEnd   DateTime
+  clientMessage    String?
+  status           InvoiceStatus @default(DRAFT)
+  weekBatchDate    DateTime
+  clonedFrom       Invoice?      @relation("InvoiceClones", fields: [clonedFromId], references: [id])
+  clonedFromId     String?
+  clones           Invoice[]     @relation("InvoiceClones")
+  lineItems        LineItem[]
+  approvedBy       String?
+  approvedAt       DateTime?
+  renewalCheckedAt DateTime?
+  exportedAt       DateTime?
+  createdBy        String
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+}
+
+enum InvoiceStatus {
+  DRAFT
+  PENDING_APPROVAL
+  APPROVED
+  EXPORTED
+}
+
+model LineItem {
+  id           String       @id @default(cuid())
+  invoice      Invoice      @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  invoiceId    String
+  type         LineItemType
+  description  String
+  personName   String?
+  overtimeDays Int?
+  quantity     Decimal      @db.Decimal(10, 4)
+  unitPrice    Decimal      @db.Decimal(10, 2)
+  amount       Decimal      @db.Decimal(10, 2)
+  qbItem       QBItem?      @relation(fields: [qbItemId], references: [id])
+  qbItemId     String?
+  qbClass      QBClass?     @relation(fields: [qbClassId], references: [id])
+  qbClassId    String?
+  serviceDate  DateTime?
+  sortOrder    Int
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+}
+
+enum LineItemType {
+  PERSON
+  CREDIT
+  PRORATION
+  EARLY_TERMINATION
+  BURST_HOURS
+  OTHER
+}
+
+model QBItem {
+  id          String     @id @default(cuid())
+  qbItemId    String     @unique
+  name        String
+  sku         String?
+  defaultRate Decimal?   @db.Decimal(10, 2)
+  lineItems   LineItem[]
+}
+
+model QBClass {
+  id        String     @id @default(cuid())
+  qbClassId String     @unique
+  name      String
+  lineItems LineItem[]
+}
+
+model ReferenceImport {
+  id          String        @id @default(cuid())
+  importedAt  DateTime      @default(now())
+  importedBy  String
+  sourceFile  String
+  recordType  ReferenceType
+  recordCount Int
+}
+
+enum ReferenceType {
+  CUSTOMERS
+  ITEMS
+  CLASSES
+  INVOICES
+}
