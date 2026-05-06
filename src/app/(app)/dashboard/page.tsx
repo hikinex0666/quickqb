@@ -11,6 +11,13 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
+function fmtDate(dateStr: string): string {
+  const d = new Date(dateStr + "T12:00:00")
+  const mm = String(d.getMonth() + 1).padStart(2, "0")
+  const dd = String(d.getDate()).padStart(2, "0")
+  return `${mm}/${dd}/${d.getFullYear()}`
+}
+
 const STATUS_LABELS: Record<InvoiceStatus, string> = {
   DRAFT:            "In Progress",
   PENDING_APPROVAL: "Needs Approval",
@@ -195,7 +202,7 @@ export default function DashboardPage() {
                   <tr key={inv.id} className="hover:bg-muted/20">
                     <td className="px-5 py-3.5">
                       <div className="flex items-center gap-2">
-                        <span>{formatDate(inv.invoiceDate)}</span>
+                        <span>{fmtDate(inv.invoiceDate)}</span>
                         {days !== null && (
                           <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded leading-none ${
                             days === 0

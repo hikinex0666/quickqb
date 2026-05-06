@@ -2,12 +2,14 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { LayoutDashboard, Users, Database } from "lucide-react"
+import { LayoutDashboard, Users, Database, Settings, FileSpreadsheet } from "lucide-react"
 
 const links = [
   { href: "/dashboard", label: "Dashboard",     icon: LayoutDashboard },
   { href: "/customers", label: "Customers",     icon: Users },
+  { href: "/export",    label: "QB Export",      icon: FileSpreadsheet },
   { href: "/reference", label: "Reference Data", icon: Database },
+  { href: "/admin",     label: "Admin",          icon: Settings },
 ]
 
 export function Nav() {

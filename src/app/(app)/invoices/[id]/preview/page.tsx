@@ -8,11 +8,8 @@ export default async function InvoicePreviewPage({ params }: { params: Promise<{
   const invoice = SAMPLE_INVOICES.find((inv) => inv.id === id) ?? SAMPLE_INVOICES[0]
 
   const data: InvoicePreviewData = {
-    invoiceNumber:    invoice.invoiceNumber,
-    invoiceDate:      invoice.invoiceDate,
-    serviceDateStart: invoice.serviceDateStart,
-    serviceDateEnd:   invoice.serviceDateEnd,
-    customer:         invoice.customer,
+    invoiceDate:   invoice.invoiceDate,
+    customer:      invoice.customer,
     clientMessage:    invoice.clientMessage,
     lineItems: invoice.lineItems.map((li) => ({
       id:          li.id,
